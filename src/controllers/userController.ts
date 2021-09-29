@@ -19,6 +19,16 @@ class UserController {
         res.status(200).send({user, token})
     }
 
+    public async profile (req: Request, res: Response): Promise<void> {
+        try{
+            const user = await User.findById(req.user._id)
+            if(!user) throw new Error('Такого пользователя не существует!')
+            res.status(200).send(user)
+        } catch (e: any) {
+            res.status(500).send(e.message)
+        }
+    }
+
 }
 
 export const userController = new UserController()

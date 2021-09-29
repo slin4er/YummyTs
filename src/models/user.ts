@@ -10,6 +10,12 @@ const userSchema = new mongoose.Schema<IUserDocument>({
         required: true,
         trim: true
     },
+    name: {
+        type: String,
+        trim: true,
+        required: true,
+        default: 'Пользователь Yummy'
+    },
     password: {
         type: String,
         required: true,
@@ -20,7 +26,10 @@ const userSchema = new mongoose.Schema<IUserDocument>({
             type: String,
             required: true
         }
-    }]
+    }],
+    avatar: {
+        type: Buffer
+    }
 })
 
 userSchema.statics.findByCredentials = async (login: string, password: string) => {
@@ -50,6 +59,10 @@ userSchema.pre('save', async function(next) {
 userSchema.methods.toJSON = function() {
     const user = this
     const userObj = user.toObject()
+
+    delete userObj.password
+    delete userObj.tokens
+    delete userObj.avatar
     return userObj.login
 }
 
