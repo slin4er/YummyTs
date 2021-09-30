@@ -1,4 +1,5 @@
 import {Request, Response} from 'express'
+import { IUser } from '../interfaces/userInterface'
 import User from '../models/user'
 
 class UserController {
@@ -7,20 +8,32 @@ class UserController {
     }
 
     public async signUp (req: Request, res: Response): Promise<void> {
-        const user = new User(req.body)
-        const token = await user.generateAuthToken()
-        res.status(201).send({user, token})
+        try{
+            const user: IUser = new User(req.body)
+            const token = await user.generateAuthToken()
+            res.status(201).send({user, token})
+        } catch (e) {
+            res.status(500).send((e as Error).message)
+        }
     }
 
     public async signIn (req: Request, res: Response): Promise<void> {
-        const user = await User.findByCredentials(req.body.login, req.body.password)
-        if(!user) throw new Error('Что-то пошло не так!')
-        const token = await user.generateAuthToken()
-        res.status(200).send({user, token})
+        try{
+            const user: IUser = await User.findByCredentials(req.body.login, req.body.password)
+            if(!user) throw new Error('Что-то пошло не так!')
+            const token = await user.generateAuthToken()
+            res.status(200).send({user, token})
+        } catch (e) {
+            res.status(500).send((e as Error).message)
+        }
     }
 
     public async profile (req: Request, res: Response): Promise<void> {
-        res.status(200).send(req.user)
+        try{
+            res.status(200).send(req.user)
+        } catch (e) {
+            res.status(500).send((e as Error).message)
+        }
     }
 
     public async logout (req: Request, res: Response): Promise<void> {
@@ -28,8 +41,8 @@ class UserController {
             req.user.tokens = []
             await req.user.save()
             res.status(200).send('Вы успешно вышли из сети!')
-        } catch (e: any) {
-            res.status(500).send(e.message)
+        } catch (e) {
+            res.status(500).send((e as Error).message)
         }
     }
 

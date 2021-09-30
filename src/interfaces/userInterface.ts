@@ -7,19 +7,19 @@ interface IUser {
     password: string,
     tokens: ConcatArray<string>[],
     avatar?: SchemaDefinitionProperty<Buffer>,
-    generateAuthToken(): string,
+    generateAuthToken(): Promise<string>,
     toJSON: () => LeanDocument<this>,
-    findByCredentials(login: string, password: string): any
+    findByCredentials(login: string, password: string): Promise<IUser>
 }
 
 interface IUserDocument extends IUser, Document {
-    generateAuthToken: () => string
+    generateAuthToken: () => Promise<string>
     toJSON: () => LeanDocument<this>,
     save: () => Promise<void>
 }
 
 interface IUserModel extends Model<IUserDocument> {
-    findByCredentials: (login: string, password: string) => Promise<any>
+    findByCredentials: (login: string, password: string) => Promise<IUser>
 }
 
 export {IUserDocument, IUserModel, IUser}

@@ -1,10 +1,11 @@
 import { Request, Response } from "express"
+import IComment from "../interfaces/commentInterface"
 import Comment from "../models/comment"
 
 class CommentController {
     public async newComment (req: Request, res: Response) {
         try {
-            const comment = await new Comment({
+            const comment: IComment = await new Comment({
                 name: req.user.name,
                 comment: req.body.comment,
                 post: req.params.id,
@@ -20,7 +21,7 @@ class CommentController {
 
     public async deleteComment (req: Request, res: Response) {
         try {
-            const comment = await Comment.findById(req.params.id)
+            const comment: IComment = await Comment.findById(req.params.id) as IComment
             if(!comment) throw new Error('Такого комментария не существует!')
             if(!comment.author.equals(req.user._id)) throw new Error('Это не ваш комментарий!')
             await comment.remove()
