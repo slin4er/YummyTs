@@ -2,8 +2,8 @@ import { Request, Response, NextFunction } from "express"
 import User from "../models/user"
 import jwt from "jsonwebtoken"
 import { keys } from "../keys"
-import { IUser } from '../interfaces/userInterface'
-import { Condition, ObjectId } from "mongoose"
+import { IUserDocument } from '../interfaces/userInterface'
+import { Condition, ObjectId, Types } from "mongoose"
 
 
 interface deocded {
@@ -11,19 +11,19 @@ interface deocded {
     iat: number
 }
 declare global {
-    namespace Express {
-      interface Request {
-        user: IUser
-        token: string
-      }
+  namespace Express {
+    interface Request {
+      user: IUserDocument
+      token: string
     }
   }
+}
 
 const auth = async (req: Request, res: Response, next: NextFunction) => {
     try{
         const token: string = req.header('Authorization')!.replace('Bearer ', '')
         const decoded = jwt.verify(token, keys.JWT_SECRET) as deocded
-        const user = await User.findOne({_id: decoded._id, 'tokens.token': token})
+        const user = await User.findOne({_id: decoded._id as Types.ObjectId, 'tokens.token': token})
         if(!user) throw new Error('Сначала авторизируйтесь!')
         req.user = user
         req.token = token

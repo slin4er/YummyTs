@@ -20,10 +20,14 @@ class UserController {
     }
 
     public async profile (req: Request, res: Response): Promise<void> {
-        try{
-            const user = await User.findById(req.user._id)
-            if(!user) throw new Error('Такого пользователя не существует!')
-            res.status(200).send(user)
+        res.status(200).send(req.user)
+    }
+
+    public async logout (req: Request, res: Response): Promise<void> {
+        try {
+            req.user.tokens = []
+            await req.user.save()
+            res.status(200).send('Вы успешно вышли из сети!')
         } catch (e: any) {
             res.status(500).send(e.message)
         }
