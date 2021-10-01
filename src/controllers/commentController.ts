@@ -5,7 +5,7 @@ import Comment from "../models/comment"
 class CommentController {
     public async newComment (req: Request, res: Response) {
         try {
-            const comment: IComment = await new Comment({
+            const comment: IComment = new Comment({
                 name: req.user.name,
                 comment: req.body.comment,
                 post: req.params.id,
